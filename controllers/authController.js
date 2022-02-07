@@ -21,7 +21,7 @@ const userController = {
                 });
                 if(userExists.length === 1) {
                     res.json({
-                        error: 'El email ya se encuentra registrado'
+                        error: 'El correo proporcionado ya se encuentra registrado'
                     })
                 } else {
                     const newUser = await db.User.create({

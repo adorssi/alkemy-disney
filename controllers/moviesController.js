@@ -5,9 +5,40 @@ const {Op} = require('sequelize');
 const moviesController = {
     list: async (req, res) => {
 
+        const titulo = req.query.titulo || '%';
+        const genero = parseInt(req.query.genre);
+        const order = req.query.order || 'DESC';
+
+        if(titulo != '%' || genero || order != 'DESC') {
+
+            try {
+                const movies = await db.Movie.findAll({
+                    attributes: ['titulo', 'imagen', 'fecha_creacion'],
+                    where: {
+                        titulo: {[Op.like]: `%${titulo}%`},
+                        genre_id: genero || {[Op.like]: '%'}
+                    },
+                    order: [
+                        ['fecha_creacion', order]
+                    ]
+                });
+
+                return res.json({
+                    meta: {
+                        name: 'Movies',
+                        total: movies.length
+                    },
+                    movies
+                });
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
         try {
             const Movies = await db.Movie.findAll({
-                attributes: ['titulo', 'imagen']     
+                attributes: ['titulo', 'imagen', 'fecha_creacion']     
              });
              res.json({
                 meta: {

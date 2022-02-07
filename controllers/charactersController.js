@@ -7,6 +7,41 @@ const charactersController = {
         const nombre = req.query.name || '%';
         const edad = parseInt(req.query.age);
         const peso = Number(req.query.peso);
+        const movieId = Number(req.query.movies);
+
+        if(movieId) {
+            
+            const charactersByMovie = await db.Movie.findByPk(movieId, {
+                include: [
+                    {association: 'characters'}
+                ]
+            });
+            
+            const characters = charactersByMovie.characters.map(character => {
+                const characterItem = {
+                    id: character.id,
+                    nombre: character.nombre,
+                    imagen: character.imagen,
+                    edad: character.edad,
+                    peso: character.peso,
+                    historia: character.historia
+                }
+                return characterItem;
+            });
+
+            return res.json({
+                movie: {
+                    id: charactersByMovie.id,
+                    titulo: charactersByMovie.titulo,
+                    imagen: charactersByMovie.imagen,
+                    fecha_creacion: charactersByMovie.fecha_creacion,
+                    calificacion: charactersByMovie.calificacion,
+                    genre_id: charactersByMovie.genre_id
+                },
+                characters
+            });
+        }
+
 
         if(nombre != '%' || edad || peso) {
             try {
@@ -91,7 +126,7 @@ const charactersController = {
             });
 
             res.json({
-                savedUser: {
+                savedCharacter: {
                     nombre,
                     imagen,
                     edad,
@@ -114,11 +149,11 @@ const charactersController = {
                 historia
             },
             {
-            where: {id: id}
+            where: {id}
             });
 
             res.json({
-                userUpdated: {
+                characterUpdated: {
                     nombre,
                     imagen,
                     edad,

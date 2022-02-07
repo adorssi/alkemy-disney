@@ -1,6 +1,7 @@
 const db = require('../database/models');
 const { validationResult } = require('express-validator' );
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const sendEmail = require('../modules/SendGridEmail/index.js');
 
 const userController = {
@@ -23,15 +24,15 @@ const userController = {
                         error: 'El email ya se encuentra registrado'
                     })
                 } else {
-                    const newUser = db.User.create({
+                    const newUser = await db.User.create({
                         name,
                         email,
                         password: bcryptjs.hashSync(password, 10),
                     });
-    
+
                     sendEmail(email, name);
                     res.json({
-                        success: 'El usuario se creó correctamente.'
+                        message: 'El usuario se creó correctamente.'
                     });
                 }
                 
@@ -59,17 +60,24 @@ const userController = {
             });
             
             if(userExists.length === 1) {
+
                 if(bcryptjs.compareSync(password, userExists[0].password)) {
+
+                    const token = jwt.sign({ id: userExists.id }, process.env.JWT_SECRET_KEY, {
+                        expiresIn: 86400
+                    });
 
                     res.json({
                         logged: true,
-                        userLogged: userExists[0].email
+                        token
                     });
+
                 } else {
                     res.json({
                         error: 'Credenciales inválidas'
                     })
                 }
+
             }
         }
     }

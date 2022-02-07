@@ -1,7 +1,7 @@
 module.exports = {
   "development": {
     "username": "user",
-    "password": '123456',
+    "password": "123456",
     "database": "alkemy_disney",
     "host": "127.0.0.1",
     "dialect": "mysql"

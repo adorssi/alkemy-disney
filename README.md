@@ -1,0 +1,1 @@
+Dentro de la carpeta postman se encuentra disponible el archivo con toda la configuracion pronta para consultar todos los endpoints de la API.
